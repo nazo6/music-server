@@ -1,0 +1,10 @@
+env_files = [{ path = "./env/.env.dev", profile = "development" }]
+
+
+[tasks.start-mysql]
+script_runner = "@duckscript"
+script = '''
+cd ./containers/mysql
+exec docker-compose up -d
+'''
+workspace = false

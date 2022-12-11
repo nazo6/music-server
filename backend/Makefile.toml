@@ -1,0 +1,25 @@
+env_files = [{ path = "./env/.env.dev", profile = "development" }]
+
+[tasks.build]
+command = "cargo"
+args = ["build", "--release"]
+env_files = ["./env/prod.env"]
+workspace = false
+
+[tasks.dev]
+run_task = { name = ["watch", "start-mysql"], parallel = true }
+workspace = false
+
+[tasks.watch]
+command = "cargo"
+args = ["run", "--bin", "minipub"]
+watch = { watch = ["./packages/"] }
+workspace = false
+
+[tasks.migrate]
+script_runner = "@duckscript"
+script = '''
+set_env DATABASE_URL ${DB_URL}/${DB_NAME}
+exec sea-orm-cli migrate ${1}
+'''
+workspace = false
