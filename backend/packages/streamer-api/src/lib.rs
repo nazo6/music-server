@@ -1,5 +1,3 @@
-pub mod handler;
-pub mod middleware;
-pub mod router;
+pub mod subsonic;
 
-pub use router::subsonic;
+pub use subsonic::router as router_subsonic;

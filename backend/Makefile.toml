@@ -1,18 +1,17 @@
-env_files = [{ path = "./env/.env.dev", profile = "development" }]
+env_files = [{ path = "../env/dev.env", profile = "development" }]
 
 [tasks.build]
 command = "cargo"
 args = ["build", "--release"]
-env_files = ["./env/prod.env"]
 workspace = false
 
 [tasks.dev]
-run_task = { name = ["watch", "start-mysql"], parallel = true }
+run_task = { name = ["start-mysql", "watch"] }
 workspace = false
 
 [tasks.watch]
 command = "cargo"
-args = ["run", "--bin", "minipub"]
+args = ["run", "--bin", "server"]
 watch = { watch = ["./packages/"] }
 workspace = false
 
@@ -21,5 +20,13 @@ script_runner = "@duckscript"
 script = '''
 set_env DATABASE_URL ${DB_URL}/${DB_NAME}
 exec sea-orm-cli migrate ${1}
+'''
+workspace = false
+
+[tasks.start-mysql]
+script_runner = "@duckscript"
+script = '''
+cd ./containers/mysql
+exec docker-compose up -d
 '''
 workspace = false

@@ -6,9 +6,9 @@ use axum::{
 };
 use common::AppState;
 
-use crate::{
-    handler::subsonic::system::ping,
-    middleware::subsonic::{auth, auth_admin},
+use super::{
+    handler::system::ping,
+    middleware::{auth, auth_admin},
 };
 
 trait SubsonicRoute<S, B> {
@@ -26,7 +26,7 @@ where
     }
 }
 
-pub fn subsonic() -> Router<AppState, Body> {
+pub fn init() -> Router<AppState, Body> {
     let authed_router = Router::new()
         // System
         .subsonic_route("/ping", get(ping))

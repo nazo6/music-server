@@ -1,6 +1,6 @@
 use std::{env, net::SocketAddr, str::FromStr};
 
-use axum::{extract::State, response::Html, routing::get, Router, Server};
+use axum::{Router, Server};
 use common::AppState;
 use migration::{Migrator, MigratorTrait};
 use sea_orm::Database;
@@ -14,6 +14,7 @@ async fn main() -> anyhow::Result<()> {
     let port = env::var("PORT").expect("PORT is not set in .env file");
     let server_url = format!("{}:{}", host, port);
 
+    dbg!(&db_url);
     let conn = Database::connect(db_url)
         .await
         .expect("Database connection failed");
@@ -21,14 +22,12 @@ async fn main() -> anyhow::Result<()> {
 
     let state = AppState { conn };
 
-    let app = Router::new().route("/", get(top_page)).with_state(state);
+    let app = Router::new()
+        .nest("/rest", streamer_api::router_subsonic::init())
+        .with_state(state);
 
     let addr = SocketAddr::from_str(&server_url).unwrap();
     Server::bind(&addr).serve(app.into_make_service()).await?;
 
     Ok(())
-}
-
-async fn top_page(State(state): State<AppState>) -> Html<String> {
-    Html("Hello, world!".to_string())
 }
