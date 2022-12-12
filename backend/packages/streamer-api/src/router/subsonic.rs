@@ -1,13 +1,15 @@
 use axum::{
     body::{Body, HttpBody},
-    extract::State,
     middleware::from_fn,
     routing::{get, MethodRouter},
     Json, Router,
 };
 use common::AppState;
 
-use crate::{handler::subsonic::system::ping, middleware::subsonic::auth};
+use crate::{
+    handler::subsonic::system::ping,
+    middleware::subsonic::{auth, auth_admin},
+};
 
 trait SubsonicRoute<S, B> {
     fn subsonic_route(self, path: &str, method_router: MethodRouter<S, B>) -> Self;
@@ -118,13 +120,14 @@ pub fn subsonic() -> Router<AppState, Body> {
         .subsonic_route("/changePassword", get(top_page))
         // Media library scanning
         .subsonic_route("/getScanStatus", get(top_page))
-        .subsonic_route("/startScan", get(top_page));
+        .subsonic_route("/startScan", get(top_page))
+        .layer(from_fn(auth_admin));
 
     Router::new()
         .merge(authed_router)
         .merge(admin_authed_router)
 }
 
-async fn top_page(State(state): State<AppState>) -> Json<String> {
+async fn top_page() -> Json<String> {
     Json("Hello, world!".to_string())
 }

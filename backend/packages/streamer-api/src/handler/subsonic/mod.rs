@@ -2,7 +2,7 @@ use async_trait::async_trait;
 use axum::{
     extract::{FromRequestParts, Query},
     http::request::Parts,
-    response::Response,
+    response::{IntoResponse, Response},
 };
 use serde::{Deserialize, Serialize};
 
@@ -11,6 +11,12 @@ pub(crate) mod system;
 pub(crate) struct SubsonicErrorResponse {
     code: usize,
     message: String,
+}
+
+impl IntoResponse for SubsonicErrorResponse {
+    fn into_response(self) -> Response {
+        todo!()
+    }
 }
 
 pub(crate) enum Format {

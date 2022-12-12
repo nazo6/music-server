@@ -1,11 +1,11 @@
 use axum::response::Response;
 use serde::Serialize;
 
-use super::Format;
+use super::{Format, SubsonicErrorResponse};
 
 #[derive(Serialize)]
 pub(crate) struct PingResponse {}
 
-pub(crate) async fn ping(format: Format) -> Response {
-    format.render(PingResponse {})
+pub(crate) async fn ping(format: Format) -> Result<Response, SubsonicErrorResponse> {
+    Ok(format.render(PingResponse {}))
 }
