@@ -1,23 +1,28 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
-#[sea_orm(table_name = "users")]
+#[sea_orm(table_name = "libraries")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: String,
-    pub password: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::library::Entity")]
-    Library,
+    #[sea_orm(
+        belongs_to = "super::user::Entity",
+        from = "Column::Id",
+        to = "super::user::Column::Id"
+    )]
+    User,
+    #[sea_orm(has_many = "super::track::Entity")]
+    Track,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
-impl Related<super::library::Entity> for Entity {
+impl Related<super::user::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Library.def()
+        Relation::User.def()
     }
 }
