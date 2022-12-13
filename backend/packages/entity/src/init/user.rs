@@ -6,6 +6,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: String,
     pub password: String,
+    pub is_admin: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
