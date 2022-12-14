@@ -1,5 +1,7 @@
 pub mod album;
+pub mod album_artist;
 pub mod artist;
+pub mod artist_track;
 pub mod category;
 pub mod genre;
 pub mod library;

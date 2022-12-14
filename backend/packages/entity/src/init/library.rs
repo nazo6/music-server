@@ -17,11 +17,22 @@ pub enum Relation {
     User,
     #[sea_orm(has_many = "super::track::Entity")]
     Track,
+    #[sea_orm(has_many = "super::artist::Entity")]
+    Artist,
+    #[sea_orm(has_many = "super::album::Entity")]
+    Album,
+    #[sea_orm(has_many = "super::genre::Entity")]
+    Genre,
 }
 
 impl ActiveModelBehavior for ActiveModel {}
 
 impl Related<super::user::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::User.def()
+    }
+}
+impl Related<super::artist::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::User.def()
     }
