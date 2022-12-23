@@ -19,7 +19,7 @@ workspace = false
 script = '''
 #!@duckscript
 cd packages/db
-exec sea-orm-cli migrate ${0}
+exec sea-orm-cli migrate ${1}
 '''
 workspace = false
 

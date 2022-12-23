@@ -31,26 +31,14 @@ impl MigrationTrait for Migration {
             .create_table(schema.create_table_from_entity(init::artist_track_relation::Entity))
             .await?;
         manager
+            .create_table(schema.create_table_from_entity(init::library_user_relation::Entity))
+            .await?;
+        manager
             .create_table(schema.create_table_from_entity(init::album_artist_relation::Entity))
             .await
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .drop_table(Table::drop().table(init::user::Entity).to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table(init::genre::Entity).to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table(init::library::Entity).to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table(init::album::Entity).to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table(init::artist::Entity).to_owned())
-            .await?;
         manager
             .drop_table(
                 Table::drop()
@@ -66,7 +54,29 @@ impl MigrationTrait for Migration {
             )
             .await?;
         manager
+            .drop_table(
+                Table::drop()
+                    .table(init::library_user_relation::Entity)
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .drop_table(Table::drop().table(init::artist::Entity).to_owned())
+            .await?;
+        manager
             .drop_table(Table::drop().table(init::track::Entity).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(init::album::Entity).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(init::genre::Entity).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(init::library::Entity).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(init::user::Entity).to_owned())
             .await
     }
 }

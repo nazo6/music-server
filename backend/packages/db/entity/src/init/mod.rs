@@ -5,5 +5,6 @@ pub mod artist_track_relation;
 pub mod category;
 pub mod genre;
 pub mod library;
+pub mod library_user_relation;
 pub mod track;
 pub mod user;
