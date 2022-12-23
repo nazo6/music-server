@@ -50,6 +50,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
 
 [[package]]
+name = "api"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "axum",
+ "common",
+ "entity",
+ "sea-orm",
+ "serde",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "arrayvec"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1113,10 +1127,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "db6d7e329c562c5dfab7a46a2afabc8b987ab9a4834c9d1ca04dc54c1546cef8"
 
 [[package]]
-name = "library-manager-api"
-version = "0.1.0"
-
-[[package]]
 name = "link-cplusplus"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1919,11 +1929,12 @@ name = "server"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "api",
  "axum",
  "common",
  "migration",
  "sea-orm",
- "streamer-api",
+ "subsonic-api",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -2111,17 +2122,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "streamer-api"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "axum",
- "common",
- "serde",
- "tokio",
-]
-
-[[package]]
 name = "stringprep"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2136,6 +2136,17 @@ name = "strsim"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
+
+[[package]]
+name = "subsonic-api"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "axum",
+ "common",
+ "serde",
+ "tokio",
+]
 
 [[package]]
 name = "subtle"

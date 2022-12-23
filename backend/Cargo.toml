@@ -1,11 +1,11 @@
 [workspace]
 members = [
-  "packages/streamer-api",
-  "packages/library-manager-api",
   "packages/server",
-  "packages/migration",
-  "packages/entity",
   "packages/common",
+  "packages/db/migration",
+  "packages/db/entity",
+  "packages/streamer/api",
+  "packages/streamer/subsonic-api",
 ]
 
 [workspace.dependencies]

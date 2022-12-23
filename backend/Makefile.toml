@@ -15,20 +15,18 @@ args = ["run", "--bin", "server"]
 watch = { watch = ["./packages/"] }
 workspace = false
 
-[tasks.soc]
+[tasks.migrate]
 script = '''
 #!@duckscript
-args = array ${1} ${2} ${3} ${4} ${5}
-args_string = array_join ${args} " "
-cd packages
-exec sea-orm-cli %{args_string}
+cd packages/db
+exec sea-orm-cli migrate ${0}
 '''
 workspace = false
 
-[tasks.soc-generate-entity]
+[tasks.generate-entity]
 script = '''
 #!@duckscript
-exec sea-orm-cli generate entity -o packages/entity/src/current
+exec sea-orm-cli generate entity -o packages/db/entity/src/current
 '''
 workspace = false
 
