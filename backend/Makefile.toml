@@ -6,7 +6,7 @@ args = ["build", "--release"]
 workspace = false
 
 [tasks.dev]
-run_task = { name = ["start-mysql", "watch"] }
+run_task = { name = ["start-db", "watch"] }
 workspace = false
 
 [tasks.watch]
@@ -23,10 +23,10 @@ exec sea-orm-cli migrate ${1}
 '''
 workspace = false
 
-[tasks.start-mysql]
+[tasks.start-db]
 script_runner = "@duckscript"
 script = '''
-cd ./containers/mysql
+cd ./containers/postgresql
 exec docker-compose up -d
 '''
 workspace = false

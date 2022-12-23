@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:15
+    volumes:
+        - postgres_data:/var/lib/postgresql/data
+    ports:
+        - ${DATABASE_PORT}:80
+    environment:
+        POSTGRES_USER: ${DATABASE_USER}
+        POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+        POSTGRES_DB: ${DATABASE_NAME}
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    ports:
+        - ${DATABASE_CONSOLE_PORT}:80
+    volumes:
+        - pgadmin4_data:/var/lib/pgadmin
+    environment:
+        PGADMIN_DEFAULT_EMAIL: ${DATABASE_CONSOLE_USER}
+        PGADMIN_DEFAULT_PASSWORD: ${DATABASE_CONSOLE_PASSWORD}
+    depends_on:
+      - db
+
+volumes:
+    postgres_data:
+    pgadmin4_data:
