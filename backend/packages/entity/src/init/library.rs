@@ -1,10 +1,11 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
-#[sea_orm(table_name = "libraries")]
+#[sea_orm(table_name = "library")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: String,
+    pub id: i32,
+    pub name: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -34,6 +35,17 @@ impl Related<super::user::Entity> for Entity {
 }
 impl Related<super::artist::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::User.def()
+        Relation::Artist.def()
+    }
+}
+impl Related<super::genre::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Genre.def()
+    }
+}
+
+impl Related<super::album::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Album.def()
     }
 }

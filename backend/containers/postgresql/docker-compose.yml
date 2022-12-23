@@ -6,7 +6,7 @@ services:
     volumes:
         - postgres_data:/var/lib/postgresql/data
     ports:
-        - ${DATABASE_PORT}:80
+        - ${DATABASE_PORT}:5432
     environment:
         POSTGRES_USER: ${DATABASE_USER}
         POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
