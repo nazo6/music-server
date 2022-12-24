@@ -16,6 +16,9 @@ impl MigrationTrait for Migration {
             .create_table(schema.create_table_from_entity(init::library::Entity))
             .await?;
         manager
+            .create_table(schema.create_table_from_entity(init::access_token::Entity))
+            .await?;
+        manager
             .create_table(schema.create_table_from_entity(init::genre::Entity))
             .await?;
         manager
@@ -62,6 +65,9 @@ impl MigrationTrait for Migration {
             .await?;
         manager
             .drop_table(Table::drop().table(init::artist::Entity).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(init::access_token::Entity).to_owned())
             .await?;
         manager
             .drop_table(Table::drop().table(init::track::Entity).to_owned())

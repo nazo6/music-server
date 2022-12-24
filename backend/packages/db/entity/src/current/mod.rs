@@ -2,11 +2,13 @@
 
 pub mod prelude;
 
+pub mod access_token;
 pub mod album;
 pub mod album_artist_relation;
 pub mod artist;
 pub mod artist_track_relation;
-pub mod genres;
+pub mod genre;
 pub mod library;
+pub mod library_user_relation;
 pub mod track;
 pub mod user;

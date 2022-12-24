@@ -1,3 +1,4 @@
+pub mod access_token;
 pub mod album;
 pub mod album_artist_relation;
 pub mod artist;

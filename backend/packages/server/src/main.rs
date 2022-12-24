@@ -24,10 +24,7 @@ async fn main() -> anyhow::Result<()> {
 
     let state = AppState { conn };
 
-    let app = Router::new()
-        .nest("/rest", api::subsonic::router::init())
-        .nest("/api", api::main::router::init(state.clone()))
-        .with_state(state);
+    let app = api::init(state);
 
     let addr = SocketAddr::from_str(&server_url).unwrap();
     tracing::debug!("listening on {}", addr);

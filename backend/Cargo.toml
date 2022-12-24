@@ -5,6 +5,7 @@ members = [
   "packages/db/migration",
   "packages/db/entity",
   "packages/api",
+  "packages/core",
 ]
 
 [workspace.dependencies]
@@ -21,3 +22,5 @@ serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = "0.3"
+bcrypt = "0.13"
+uuid = { version = "1", features = ["v4", "fast-rng", "macro-diagnostics"] }

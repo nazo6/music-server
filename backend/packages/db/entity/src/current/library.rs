@@ -17,18 +17,10 @@ pub enum Relation {
     Album,
     #[sea_orm(has_many = "super::artist::Entity")]
     Artist,
-    #[sea_orm(has_many = "super::genres::Entity")]
-    Genres,
+    #[sea_orm(has_many = "super::genre::Entity")]
+    Genre,
     #[sea_orm(has_many = "super::track::Entity")]
     Track,
-    #[sea_orm(
-        belongs_to = "super::user::Entity",
-        from = "Column::Id",
-        to = "super::user::Column::Id",
-        on_update = "NoAction",
-        on_delete = "NoAction"
-    )]
-    User,
 }
 
 impl Related<super::album::Entity> for Entity {
@@ -43,9 +35,9 @@ impl Related<super::artist::Entity> for Entity {
     }
 }
 
-impl Related<super::genres::Entity> for Entity {
+impl Related<super::genre::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Genres.def()
+        Relation::Genre.def()
     }
 }
 
@@ -57,7 +49,10 @@ impl Related<super::track::Entity> for Entity {
 
 impl Related<super::user::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::User.def()
+        super::library_user_relation::Relation::User.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(super::library_user_relation::Relation::Library.def().rev())
     }
 }
 
