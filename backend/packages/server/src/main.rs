@@ -25,8 +25,8 @@ async fn main() -> anyhow::Result<()> {
     let state = AppState { conn };
 
     let app = Router::new()
-        .nest("/rest", subsonic_api::router::init())
-        .nest("/api", api::router::init(state.clone()))
+        .nest("/rest", api::subsonic::router::init())
+        .nest("/api", api::main::router::init(state.clone()))
         .with_state(state);
 
     let addr = SocketAddr::from_str(&server_url).unwrap();

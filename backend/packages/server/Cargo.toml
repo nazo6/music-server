@@ -11,6 +11,5 @@ anyhow = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 migration = { path = "../db/migration" }
-subsonic-api = { path = "../streamer/subsonic-api" }
-api = { path = "../streamer/api" }
+api = { path = "../api" }
 common = { path = "../common" }

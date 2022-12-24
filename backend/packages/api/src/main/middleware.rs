@@ -13,18 +13,18 @@ pub async fn setup_guard<B>(
     State(state): State<AppState>,
     req: Request<B>,
     next: Next<B>,
-) -> Response {
+) -> Result<Response, StatusCode> {
     let initialized = user::Entity::find()
-        .paginate(&state.conn, 1)
-        .num_items()
+        .count(&state.conn)
         .await
-        .unwrap()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
         > 0;
-    if initialized {
+    let res = if initialized {
         info!("setup already initialized. aborting.");
         StatusCode::FORBIDDEN.into_response()
     } else {
         debug!("setup not initialized.");
         next.run(req).await
-    }
+    };
+    Ok(res)
 }

@@ -4,8 +4,7 @@ members = [
   "packages/common",
   "packages/db/migration",
   "packages/db/entity",
-  "packages/streamer/api",
-  "packages/streamer/subsonic-api",
+  "packages/api",
 ]
 
 [workspace.dependencies]

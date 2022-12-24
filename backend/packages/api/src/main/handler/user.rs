@@ -31,7 +31,6 @@ pub async fn add_library(
                 let res = library::Entity::insert(library::ActiveModel {
                     name: Set(query.library_name.clone()),
                     path: Set(query.library_path.clone()),
-                    user_id: Set(user.id),
                     ..Default::default()
                 })
                 .exec(&state.conn)

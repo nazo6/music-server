@@ -1,7 +1,7 @@
 use axum::{body::Body, http::StatusCode, middleware::from_fn_with_state, routing::get, Router};
 use common::AppState;
 
-use crate::middleware;
+use super::middleware;
 
 use super::handler::setup;
 
