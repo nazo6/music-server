@@ -5,7 +5,7 @@ members = [
   "packages/db/migration",
   "packages/db/entity",
   "packages/api",
-  "packages/core",
+  "packages/server-core",
 ]
 
 [workspace.dependencies]

@@ -10,8 +10,8 @@ pub struct QueryRoot;
 
 #[Object]
 impl QueryRoot {
-    async fn current_token<'a>(&self, ctx: &'a Context<'_>) -> Option<&'a str> {
-        ctx.data_opt::<Token>().map(|token| token.0.as_str())
+    async fn value(&self) -> String {
+        "1".to_string()
     }
 }
 
@@ -19,7 +19,7 @@ pub struct MutationRoot;
 
 #[Object]
 impl MutationRoot {
-    async fn add_library(&self, ctx: &Context<'_>, name: String, path: String) -> String {
-        "".to_string()
+    async fn value(&self) -> String {
+        "1".to_string()
     }
 }

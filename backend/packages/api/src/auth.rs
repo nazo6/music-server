@@ -22,7 +22,8 @@ async fn login(
     State(state): State<AppState>,
     Json(body): Json<LoginRequestBody>,
 ) -> Result<Json<LoginResponseBody>, StatusCode> {
-    let user = core::user::get_user_if_authed(&body.username, &body.password, &state.conn).await;
+    let user =
+        server_core::user::get_user_if_authed(&body.username, &body.password, &state.conn).await;
 
     match user {
         Ok(Some(user)) => {

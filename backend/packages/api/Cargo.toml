@@ -19,5 +19,5 @@ aliri = "0.6"
 futures-util = "0.3"
 jsonwebtoken = "8"
 once_cell = "1"
-core = { path = "../core" }
+server-core = { path = "../server-core" }
 uuid = { worksapce = true }

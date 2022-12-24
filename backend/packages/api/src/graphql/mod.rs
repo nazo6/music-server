@@ -16,7 +16,7 @@ use self::schema::ApiSchema;
 mod schema;
 
 pub async fn graphql_playground() -> impl IntoResponse {
-    Html(playground_source(GraphQLPlaygroundConfig::new("/")))
+    Html(playground_source(GraphQLPlaygroundConfig::new("/graphql")))
 }
 
 async fn graphql_handler(
@@ -24,7 +24,7 @@ async fn graphql_handler(
     headers: HeaderMap,
     req: GraphQLRequest,
 ) -> GraphQLResponse {
-    schema.execute(req).await.into()
+    schema.execute(req.into_inner()).await.into()
 }
 
 pub fn init() -> Router<common::AppState> {

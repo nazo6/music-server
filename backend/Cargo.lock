@@ -157,13 +157,13 @@ dependencies = [
  "async-trait",
  "axum",
  "common",
- "core",
  "entity",
  "futures-util",
  "jsonwebtoken",
  "once_cell",
  "sea-orm",
  "serde",
+ "server-core",
  "tokio",
  "tracing",
  "uuid",
@@ -762,7 +762,9 @@ dependencies = [
 name = "common"
 version = "0.1.0"
 dependencies = [
+ "once_cell",
  "sea-orm",
+ "tokio",
 ]
 
 [[package]]
@@ -784,17 +786,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd7bef69dc86e3c610e4e7aed41035e2a7ed12e72dd7530f61327a6579a4390b"
 dependencies = [
  "crossbeam-utils",
-]
-
-[[package]]
-name = "core"
-version = "0.1.0"
-dependencies = [
- "bcrypt",
- "entity",
- "sea-orm",
- "thiserror",
- "uuid",
 ]
 
 [[package]]
@@ -2354,6 +2345,17 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "server-core"
+version = "0.1.0"
+dependencies = [
+ "bcrypt",
+ "entity",
+ "sea-orm",
+ "thiserror",
+ "uuid",
 ]
 
 [[package]]

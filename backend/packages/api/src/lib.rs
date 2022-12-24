@@ -1,7 +1,6 @@
 use axum::Router;
 use common::AppState;
 
-pub mod app;
 pub mod auth;
 pub mod graphql;
 
