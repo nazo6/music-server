@@ -1,7 +1,6 @@
 use std::{env, net::SocketAddr, str::FromStr};
 
 use axum::{Router, Server};
-use common::AppState;
 use migration::{Migrator, MigratorTrait};
 use sea_orm::Database;
 
@@ -22,9 +21,7 @@ async fn main() -> anyhow::Result<()> {
         .expect("Database connection failed");
     Migrator::up(&conn, None).await.unwrap();
 
-    let state = AppState { conn };
-
-    let app = api::init(state);
+    let app = api::init();
 
     let addr = SocketAddr::from_str(&server_url).unwrap();
     tracing::debug!("listening on {}", addr);

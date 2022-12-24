@@ -1,11 +1,9 @@
-use axum::extract::{Query, State};
 use axum::routing::post;
 use axum::Json;
 use axum::{http::StatusCode, Router};
-use common::AppState;
 use serde::{Deserialize, Serialize};
 
-pub fn init() -> Router<AppState> {
+pub fn init() -> Router {
     Router::new().route("/", post(login))
 }
 
@@ -18,12 +16,8 @@ struct LoginRequestBody {
 struct LoginResponseBody {
     token: String,
 }
-async fn login(
-    State(state): State<AppState>,
-    Json(body): Json<LoginRequestBody>,
-) -> Result<Json<LoginResponseBody>, StatusCode> {
-    let user =
-        server_core::user::get_user_if_authed(&body.username, &body.password, &state.conn).await;
+async fn login(Json(body): Json<LoginRequestBody>) -> Result<Json<LoginResponseBody>, StatusCode> {
+    let user = server_core::user::get_user_if_authed(&body.username, &body.password).await;
 
     match user {
         Ok(Some(user)) => {

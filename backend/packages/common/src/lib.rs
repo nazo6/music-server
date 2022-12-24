@@ -5,11 +5,6 @@ use sea_orm::Database;
 use sea_orm::DatabaseConnection;
 use tokio::runtime::Runtime;
 
-#[derive(Clone)]
-pub struct AppState {
-    pub conn: DatabaseConnection,
-}
-
 pub static DB_CONN: Lazy<DatabaseConnection> = Lazy::new(|| {
     let rt = Runtime::new().unwrap();
 

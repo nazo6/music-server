@@ -27,7 +27,7 @@ async fn graphql_handler(
     schema.execute(req.into_inner()).await.into()
 }
 
-pub fn init() -> Router<common::AppState> {
+pub fn init() -> Router {
     let schema = Schema::new(schema::QueryRoot, schema::MutationRoot, EmptySubscription);
     Router::new()
         .route("/", get(graphql_playground).post(graphql_handler))

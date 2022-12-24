@@ -11,3 +11,4 @@ thiserror = "1"
 entity = { path = "../db/entity" }
 sea-orm = { workspace = true }
 uuid = { workspace = true }
+common = {path="../common"}
