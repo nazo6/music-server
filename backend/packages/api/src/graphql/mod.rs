@@ -1,15 +1,18 @@
 use async_graphql::{
-    http::{playground_source, GraphQLPlaygroundConfig, ALL_WEBSOCKET_PROTOCOLS},
-    EmptyMutation, EmptySubscription, Schema,
+    http::{playground_source, GraphQLPlaygroundConfig},
+    EmptySubscription, Schema,
 };
-use async_graphql_axum::{GraphQLProtocol, GraphQLRequest, GraphQLResponse, GraphQLWebSocket};
+use async_graphql_axum::{GraphQLRequest, GraphQLResponse, GraphQLWebSocket};
 use axum::{
-    extract::{ws::WebSocketUpgrade, Extension},
+    extract::Extension,
     http::header::HeaderMap,
-    response::{Html, IntoResponse, Response},
+    response::{Html, IntoResponse},
     routing::get,
-    Router, Server,
+    Router,
 };
+use tracing::log::debug;
+
+use crate::auth_extractor::ExtractUser;
 
 use self::schema::ApiSchema;
 
@@ -21,10 +24,14 @@ pub async fn graphql_playground() -> impl IntoResponse {
 
 async fn graphql_handler(
     Extension(schema): Extension<ApiSchema>,
+    ExtractUser(user): ExtractUser,
     headers: HeaderMap,
     req: GraphQLRequest,
 ) -> GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
+    debug!("graphql_handler: {:?}", user);
+    let mut req = req.into_inner();
+    req = req.data(user);
+    schema.execute(req).await.into()
 }
 
 pub fn init() -> Router {

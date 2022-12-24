@@ -12,3 +12,5 @@ entity = { path = "../db/entity" }
 sea-orm = { workspace = true }
 uuid = { workspace = true }
 common = {path="../common"}
+sha2 = "0.10"
+base64ct = {version="1", features=["alloc"]}
