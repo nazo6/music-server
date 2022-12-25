@@ -1,6 +1,6 @@
 use super::guard::{Role, RoleGuard};
 use async_graphql::{Context, Object, Result};
-use server_core::user::add_user;
+use server_core::user::create_user;
 
 pub struct MutationRoot;
 
@@ -26,7 +26,7 @@ impl MutationRoot {
         #[graphql(desc = "Password of user")] password: String,
         #[graphql(desc = "Is admin user")] is_admin: bool,
     ) -> Result<String> {
-        add_user(&name, &password, is_admin).await?;
+        create_user(&name, &password, is_admin).await?;
         Ok("success".to_string())
     }
 }

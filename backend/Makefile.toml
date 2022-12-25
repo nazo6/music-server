@@ -20,7 +20,7 @@ watch = { watch = ["./packages/"] }
 workspace = false
 
 [tasks.profile]
-env = { "CARGO_PROFILE_RELEASE_DEBUG"="true" }
+env = { "CARGO_PROFILE_RELEASE_DEBUG" = "true" }
 command = "cargo"
 args = ["flamegraph", "--bin", "server"]
 # watch = { watch = ["./packages/"] }
@@ -46,5 +46,15 @@ script_runner = "@duckscript"
 script = '''
 cd ./containers/postgresql
 exec docker-compose up -d
+'''
+workspace = false
+
+[tasks.update-entity]
+script_runner = "@duckscript"
+script = '''
+cd packages/db
+exec sea-orm-cli migrate down
+exec sea-orm-cli migrate up
+exec sea-orm-cli generate entity -o entity/src/current
 '''
 workspace = false

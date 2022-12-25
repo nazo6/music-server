@@ -13,7 +13,7 @@ fn hash_sha256(input: &str) -> String {
     Base64::encode_string(&hash)
 }
 
-pub async fn new_access_token(user_id: i32) -> Result<String, Error> {
+pub async fn create_token(user_id: i32) -> Result<String, Error> {
     let token = Uuid::new_v4().to_string();
     let token_hash = hash_sha256(&token);
 
@@ -31,6 +31,20 @@ pub async fn new_access_token(user_id: i32) -> Result<String, Error> {
     txn.commit().await?;
 
     Ok(token)
+}
+
+pub async fn revoke_token(token: &str) -> Result<(), Error> {
+    let token_hash = hash_sha256(token);
+
+    let res = access_token::Entity::delete_by_id(token_hash)
+        .exec(get_db().await)
+        .await?;
+
+    if res.rows_affected == 1 {
+        Ok(())
+    } else {
+        Err(Error::GeneralError("Token not found.".to_string()))
+    }
 }
 
 pub async fn validate_token(token: &str) -> Result<Option<user::Model>, Error> {

@@ -1,14 +1,18 @@
-use crate::errors::Error;
+use crate::{access_token::create_token, errors::Error};
 use bcrypt::{hash, verify, DEFAULT_COST};
 use entity::current::*;
-use sea_orm::{prelude::*, Set};
+use sea_orm::{prelude::*, Set, TransactionTrait};
 
 use common::get_db;
 
-pub async fn add_user(username: &str, password: &str, is_admin: bool) -> Result<(), Error> {
+pub async fn create_user(
+    username: &str,
+    password: &str,
+    is_admin: bool,
+) -> Result<user::Model, Error> {
     let password_hash = hash(password, DEFAULT_COST)?;
 
-    user::ActiveModel {
+    let user = user::ActiveModel {
         name: Set(username.to_string()),
         password_hash: Set(password_hash.to_string()),
         is_admin: Set(is_admin),
@@ -17,7 +21,23 @@ pub async fn add_user(username: &str, password: &str, is_admin: bool) -> Result<
     .insert(get_db().await)
     .await?;
 
-    Ok(())
+    Ok(user)
+}
+
+pub async fn create_user_and_token(
+    username: &str,
+    password: &str,
+    is_admin: bool,
+) -> Result<String, Error> {
+    let txn = get_db().await.begin().await?;
+
+    let user = create_user(username, password, is_admin).await?;
+
+    let token = create_token(user.id).await?;
+
+    txn.commit().await?;
+
+    Ok(token)
 }
 
 pub async fn get_user_if_authed(
