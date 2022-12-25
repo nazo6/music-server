@@ -42,7 +42,9 @@ pub async fn validate_token(token: &str) -> Result<Option<user::Model>, Error> {
         .await?;
 
     if let Some(user) = user {
-        Ok(Some(user.1.unwrap()))
+        Ok(Some(user.1.expect(
+            "User referenced in access token not found. This should not happen.",
+        )))
     } else {
         Ok(None)
     }

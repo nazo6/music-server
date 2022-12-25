@@ -1,5 +1,6 @@
 use async_graphql::{EmptySubscription, Schema};
 
+pub mod guard;
 pub mod mutation;
 pub mod query;
 

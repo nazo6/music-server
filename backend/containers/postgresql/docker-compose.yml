@@ -5,6 +5,7 @@ services:
     image: postgres:15
     volumes:
         - postgres_data:/var/lib/postgresql/data
+    command: ["postgres", "-c", "log_statement=all"]
     ports:
         - ${DATABASE_PORT}:5432
     environment:

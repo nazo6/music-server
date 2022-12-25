@@ -11,7 +11,7 @@ use axum::{
 };
 use tracing::log::debug;
 
-use crate::auth_extractor::ExtractUser;
+use crate::{auth_extractor::ExtractUser, graphql::schema::guard::Role};
 
 use self::schema::ApiSchema;
 
@@ -27,8 +27,21 @@ async fn graphql_handler(
     req: GraphQLRequest,
 ) -> GraphQLResponse {
     debug!("graphql_handler: {:?}", user);
+
+    let role = if let Some(user) = &user {
+        if user.is_admin {
+            Role::Admin
+        } else {
+            Role::User
+        }
+    } else {
+        Role::Guest
+    };
+
     let mut req = req.into_inner();
     req = req.data(user);
+    req = req.data(role);
+
     schema.execute(req).await.into()
 }
 

@@ -7,10 +7,9 @@ use axum::{
 };
 use server_core::access_token::validate_token;
 
-#[derive(Debug)]
-pub struct User(pub Option<entity::current::user::Model>);
+pub type User = entity::current::user::Model;
 
-pub struct ExtractUser(pub User);
+pub struct ExtractUser(pub Option<User>);
 
 #[async_trait]
 impl<S> FromRequestParts<S> for ExtractUser
@@ -22,15 +21,21 @@ where
     async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
         let token = TypedHeader::<Authorization<Bearer>>::from_request_parts(parts, state).await;
         if let Ok(TypedHeader(Authorization(token))) = token {
-            let user = validate_token(token.token()).await;
+            let user = validate_token(token.token()).await.map_err(|_| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "Error validating token. Please try again.",
+                )
+            })?;
 
-            if let Ok(Some(user)) = user {
-                Ok(ExtractUser(User(Some(user))))
+            if let Some(user) = user {
+                Ok(ExtractUser(Some(user)))
             } else {
-                Ok(ExtractUser(User(None)))
+                Err((StatusCode::UNAUTHORIZED, "Invalid token"))
             }
         } else {
-            Ok(ExtractUser(User(None)))
+            // No token provided (guest)
+            Ok(ExtractUser(None))
         }
     }
 }

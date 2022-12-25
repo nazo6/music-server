@@ -9,10 +9,21 @@ workspace = false
 run_task = { name = ["start-db", "watch"] }
 workspace = false
 
+[tasks.dev-profile]
+run_task = { name = ["start-db", "profile"] }
+workspace = false
+
 [tasks.watch]
 command = "cargo"
 args = ["run", "--bin", "server"]
 watch = { watch = ["./packages/"] }
+workspace = false
+
+[tasks.profile]
+env = { "CARGO_PROFILE_RELEASE_DEBUG"="true" }
+command = "cargo"
+args = ["flamegraph", "--bin", "server"]
+# watch = { watch = ["./packages/"] }
 workspace = false
 
 [tasks.migrate]

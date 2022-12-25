@@ -20,4 +20,4 @@ futures-util = "0.3"
 jsonwebtoken = "8"
 once_cell = "1"
 server-core = { path = "../server-core" }
-uuid = { worksapce = true }
+uuid = { workspace = true }

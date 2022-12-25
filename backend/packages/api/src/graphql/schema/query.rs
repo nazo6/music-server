@@ -1,18 +1,25 @@
 pub struct QueryRoot;
 
-use async_graphql::{Context, Object};
+use async_graphql::{Context, Object, SimpleObject};
 
 use crate::auth_extractor::User;
 
+#[derive(SimpleObject)]
+struct UserResponse {
+    name: String,
+    is_admin: bool,
+}
+
 #[Object]
 impl QueryRoot {
-    async fn value(&self) -> String {
-        "1".to_string()
-    }
-    async fn user(&self, ctx: &Context<'_>) -> Option<String> {
-        let user = ctx.data::<User>();
-        if let Ok(user) = user {
-            user.0.as_ref().map(|user| user.name.clone())
+    /// Return the current authed user
+    async fn user(&self, ctx: &Context<'_>) -> Option<UserResponse> {
+        let user = ctx.data::<Option<User>>();
+        if let Ok(Some(user)) = user {
+            Some(UserResponse {
+                name: user.name.clone(),
+                is_admin: user.is_admin,
+            })
         } else {
             None
         }
