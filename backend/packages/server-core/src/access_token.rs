@@ -1,4 +1,3 @@
-use crate::user::get_user_from_id;
 use crate::{errors::Error, user::get_user};
 use base64ct::{Base64, Encoding};
 use common::get_db;

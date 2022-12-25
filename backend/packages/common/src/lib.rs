@@ -2,7 +2,6 @@ use std::env;
 
 use sea_orm::Database;
 use sea_orm::DatabaseConnection;
-use tokio::runtime::Runtime;
 use tokio::sync::OnceCell;
 
 static DB_CONN: OnceCell<DatabaseConnection> = OnceCell::const_new();
@@ -16,4 +15,9 @@ pub async fn get_db() -> &'static DatabaseConnection {
                 .expect("Database connection failed")
         })
         .await
+}
+
+#[derive(Debug)]
+enum BackgroundCommand {
+    StartScan,
 }

@@ -2,10 +2,9 @@ use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
     EmptySubscription, Schema,
 };
-use async_graphql_axum::{GraphQLRequest, GraphQLResponse, GraphQLWebSocket};
+use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
     extract::Extension,
-    http::header::HeaderMap,
     response::{Html, IntoResponse},
     routing::get,
     Router,
@@ -25,7 +24,6 @@ pub async fn graphql_playground() -> impl IntoResponse {
 async fn graphql_handler(
     Extension(schema): Extension<ApiSchema>,
     ExtractUser(user): ExtractUser,
-    headers: HeaderMap,
     req: GraphQLRequest,
 ) -> GraphQLResponse {
     debug!("graphql_handler: {:?}", user);
@@ -35,7 +33,11 @@ async fn graphql_handler(
 }
 
 pub fn init() -> Router {
-    let schema = Schema::new(schema::QueryRoot, schema::MutationRoot, EmptySubscription);
+    let schema = Schema::new(
+        schema::query::QueryRoot,
+        schema::mutation::MutationRoot,
+        EmptySubscription,
+    );
     Router::new()
         .route("/", get(graphql_playground).post(graphql_handler))
         .layer(Extension(schema))

@@ -1,6 +1,6 @@
 use std::{env, net::SocketAddr, str::FromStr};
 
-use axum::{Router, Server};
+use axum::Server;
 use migration::{Migrator, MigratorTrait};
 use sea_orm::Database;
 
