@@ -1,6 +1,6 @@
 use async_graphql::{Context, Guard, Result};
 
-#[derive(Eq, PartialEq, Copy, Clone)]
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub enum Role {
     Admin,
     User,
@@ -41,7 +41,7 @@ impl Guard for RoleGuard {
                 Err("Forbidden".into())
             }
         } else {
-            Err("Internal error!".into())
+            Err("Internal error! [001]".into())
         }
     }
 }

@@ -23,6 +23,7 @@ pub enum BackgroundEvent {
 #[derive(Debug, Clone)]
 struct BackgroundState {
     scanning: bool,
+    count: i32,
 }
 
 pub struct BackgroundActor {
@@ -38,15 +39,23 @@ impl BackgroundActor {
     ) -> Self {
         BackgroundActor {
             receiver,
-            state: Arc::new(Mutex::new(BackgroundState { scanning: false })),
+            state: Arc::new(Mutex::new(BackgroundState {
+                scanning: false,
+                count: 0,
+            })),
             notifier,
         }
     }
 
-    async fn handle_message(msg: BackgroundCommand, state: Arc<Mutex<BackgroundState>>) {
+    async fn handle_message(
+        msg: BackgroundCommand,
+        state: Arc<Mutex<BackgroundState>>,
+        notifier: async_channel::Sender<BackgroundEvent>,
+    ) {
         match msg {
             BackgroundCommand::StartScan { responder } => {
                 if state.lock().unwrap().scanning {
+                    state.lock().unwrap().count += 1;
                     tracing::info!("Already scanning");
                     responder
                         .send(StartScanResponse {
@@ -65,6 +74,16 @@ impl BackgroundActor {
 
                     tracing::info!("Started scanning");
                 }
+
+                let count = state.lock().unwrap().count;
+
+                notifier
+                    .send(BackgroundEvent::UpdateScan {
+                        scanning: true,
+                        count,
+                    })
+                    .await
+                    .unwrap();
             }
         }
     }
@@ -73,8 +92,9 @@ impl BackgroundActor {
         while let Some(msg) = self.receiver.recv().await {
             tracing::info!("Receiver: {:?}", &msg);
             let state = self.state.clone();
+            let notifier = self.notifier.clone();
             tokio::spawn(async move {
-                Self::handle_message(msg, state).await;
+                Self::handle_message(msg, state, notifier).await;
             });
         }
     }
