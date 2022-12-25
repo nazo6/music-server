@@ -4,7 +4,9 @@ use entity::current::*;
 use sea_orm::{prelude::*, Set, TransactionTrait};
 
 use common::get_db;
+use tracing::instrument;
 
+#[instrument]
 pub async fn create_user(
     username: &str,
     password: &str,
@@ -24,6 +26,7 @@ pub async fn create_user(
     Ok(user)
 }
 
+#[instrument]
 pub async fn create_user_and_token(
     username: &str,
     password: &str,
@@ -40,6 +43,7 @@ pub async fn create_user_and_token(
     Ok(token)
 }
 
+#[instrument]
 pub async fn get_user_if_authed(
     username: &str,
     password: &str,
@@ -62,6 +66,7 @@ pub async fn get_user_if_authed(
     }
 }
 
+#[instrument]
 pub async fn get_user_from_id(username: &str) -> Result<user::Model, Error> {
     let user = user::Entity::find()
         .filter(user::Column::Name.eq(username))
@@ -74,11 +79,22 @@ pub async fn get_user_from_id(username: &str) -> Result<user::Model, Error> {
     }
 }
 
+#[instrument]
 pub async fn get_user(user_id: i32) -> Result<user::Model, Error> {
     let user = user::Entity::find_by_id(user_id).one(get_db().await).await;
 
     match user {
         Ok(Some(user)) => Ok(user),
+        _ => Err(Error::GeneralError("User not found".to_string())),
+    }
+}
+
+#[instrument]
+pub async fn get_users() -> Result<Vec<user::Model>, Error> {
+    let users = user::Entity::find().all(get_db().await).await;
+
+    match users {
+        Ok(users) => Ok(users),
         _ => Err(Error::GeneralError("User not found".to_string())),
     }
 }

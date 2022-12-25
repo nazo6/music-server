@@ -1,17 +1,12 @@
 [package]
-name = "server-core"
+name = "server-background"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bcrypt = "0.13"
-thiserror = "1"
-entity = { path = "../db/entity" }
-sea-orm = { workspace = true }
-uuid = { workspace = true }
+tokio = { workspace = true }
 common = { path = "../common" }
-sha2 = "0.10"
-base64ct = { version = "1", features = ["alloc"] }
 tracing = { workspace = true }
+async-channel = { workspace = true }

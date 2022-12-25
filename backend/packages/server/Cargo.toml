@@ -13,3 +13,5 @@ tracing-subscriber = { workspace = true }
 migration = { path = "../db/migration" }
 api = { path = "../api" }
 common = { path = "../common" }
+server-background = { path = "../server-background" }
+async-channel = { workspace = true }

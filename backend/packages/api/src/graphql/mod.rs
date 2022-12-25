@@ -4,14 +4,14 @@ use async_graphql::{
 };
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
-    extract::Extension,
+    extract::{Extension, State},
     response::{Html, IntoResponse},
     routing::get,
     Router,
 };
 use tracing::log::debug;
 
-use crate::{auth_extractor::ExtractUser, graphql::schema::guard::Role};
+use crate::{auth_extractor::ExtractUser, graphql::schema::guard::Role, AppState};
 
 use self::schema::ApiSchema;
 
@@ -24,6 +24,7 @@ pub async fn graphql_playground() -> impl IntoResponse {
 async fn graphql_handler(
     Extension(schema): Extension<ApiSchema>,
     ExtractUser(user): ExtractUser,
+    State(state): State<AppState>,
     req: GraphQLRequest,
 ) -> GraphQLResponse {
     debug!("graphql_handler: {:?}", user);
@@ -41,11 +42,12 @@ async fn graphql_handler(
     let mut req = req.into_inner();
     req = req.data(user);
     req = req.data(role);
+    req = req.data(state);
 
     schema.execute(req).await.into()
 }
 
-pub fn init() -> Router {
+pub fn init() -> Router<AppState> {
     let schema = Schema::new(
         schema::query::QueryRoot,
         schema::mutation::MutationRoot,

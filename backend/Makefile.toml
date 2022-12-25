@@ -5,6 +5,21 @@ command = "cargo"
 args = ["build", "--release"]
 workspace = false
 
+[tasks.build-profile]
+env = { "CARGO_PROFILE_RELEASE_DEBUG" = "true" }
+command = "cargo"
+args = ["build", "--release"]
+workspace = false
+
+[tasks.start]
+command = "./target/release/server"
+workspace = false
+
+[tasks.start-perf]
+command = "sudo"
+args = ["-E", "perf", "record", "--", "./target/release/server"]
+workspace = false
+
 [tasks.dev]
 run_task = { name = ["start-db", "watch"] }
 workspace = false
@@ -22,7 +37,7 @@ workspace = false
 [tasks.profile]
 env = { "CARGO_PROFILE_RELEASE_DEBUG" = "true" }
 command = "cargo"
-args = ["flamegraph", "--bin", "server"]
+args = ["flamegraph", "--bin", "server", "--root"]
 # watch = { watch = ["./packages/"] }
 workspace = false
 

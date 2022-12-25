@@ -4,7 +4,9 @@ use axum::{http::StatusCode, Router};
 use serde::{Deserialize, Serialize};
 use server_core::access_token::{create_token, revoke_token};
 
-pub fn init() -> Router {
+use crate::AppState;
+
+pub fn init() -> Router<AppState> {
     Router::new()
         .route("/login", post(login))
         .route("/logout", post(logout))

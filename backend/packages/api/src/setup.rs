@@ -3,7 +3,9 @@ use axum::Json;
 use axum::{http::StatusCode, Router};
 use serde::{Deserialize, Serialize};
 
-pub fn init() -> Router {
+use crate::AppState;
+
+pub fn init() -> Router<AppState> {
     Router::new().route("/create_admin", post(create_admin))
 }
 

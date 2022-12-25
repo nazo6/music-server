@@ -38,7 +38,7 @@ impl Guard for RoleGuard {
             if role >= &self.role {
                 Ok(())
             } else {
-                Err("Unauthorized".into())
+                Err("Forbidden".into())
             }
         } else {
             Err("Internal error!".into())

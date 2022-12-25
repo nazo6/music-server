@@ -152,6 +152,7 @@ version = "0.1.0"
 dependencies = [
  "aliri",
  "aliri_axum",
+ "async-channel",
  "async-graphql",
  "async-graphql-axum",
  "async-trait",
@@ -163,6 +164,7 @@ dependencies = [
  "once_cell",
  "sea-orm",
  "serde",
+ "server-background",
  "server-core",
  "tokio",
  "tracing",
@@ -2344,13 +2346,25 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "api",
+ "async-channel",
  "axum",
  "common",
  "migration",
  "sea-orm",
+ "server-background",
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "server-background"
+version = "0.1.0"
+dependencies = [
+ "async-channel",
+ "common",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -2364,6 +2378,7 @@ dependencies = [
  "sea-orm",
  "sha2",
  "thiserror",
+ "tracing",
  "uuid",
 ]
 

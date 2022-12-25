@@ -2,8 +2,9 @@ use crate::{errors::Error, user::get_user};
 use base64ct::{Base64, Encoding};
 use common::get_db;
 use entity::current::*;
-use sea_orm::{prelude::*, Set, TransactionTrait};
+use sea_orm::{prelude::*, Set};
 use sha2::{Digest, Sha256};
+use tracing::instrument;
 use uuid::Uuid;
 
 fn hash_sha256(input: &str) -> String {
@@ -13,11 +14,10 @@ fn hash_sha256(input: &str) -> String {
     Base64::encode_string(&hash)
 }
 
+#[instrument]
 pub async fn create_token(user_id: i32) -> Result<String, Error> {
     let token = Uuid::new_v4().to_string();
     let token_hash = hash_sha256(&token);
-
-    let txn = get_db().await.begin().await?;
 
     let user = get_user(user_id).await?;
 
@@ -25,14 +25,13 @@ pub async fn create_token(user_id: i32) -> Result<String, Error> {
         token_hash: Set(token_hash),
         user_id: Set(user.id),
     }
-    .insert(&txn)
+    .insert(get_db().await)
     .await?;
-
-    txn.commit().await?;
 
     Ok(token)
 }
 
+#[instrument]
 pub async fn revoke_token(token: &str) -> Result<(), Error> {
     let token_hash = hash_sha256(token);
 
@@ -47,6 +46,7 @@ pub async fn revoke_token(token: &str) -> Result<(), Error> {
     }
 }
 
+#[instrument]
 pub async fn validate_token(token: &str) -> Result<Option<user::Model>, Error> {
     let token_hash = hash_sha256(token);
     let user = access_token::Entity::find()

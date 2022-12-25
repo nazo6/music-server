@@ -1,23 +1,18 @@
-use super::guard::{Role, RoleGuard};
+use crate::AppState;
+
+use super::{
+    guard::{Role, RoleGuard},
+    output_objects::Library,
+};
 use async_graphql::{Context, Object, Result};
-use server_core::user::create_user;
+use server_background::BackgroundCommand;
+use server_core::{library::create_library, user::create_user};
+use tokio::sync::oneshot;
 
 pub struct MutationRoot;
 
 #[Object]
 impl MutationRoot {
-    #[graphql(guard = "RoleGuard::new(Role::User)")]
-    async fn test_guest(&self) -> String {
-        "ok".to_string()
-    }
-    #[graphql(guard = "RoleGuard::new(Role::User)")]
-    async fn test_user(&self) -> String {
-        "ok".to_string()
-    }
-    #[graphql(guard = "RoleGuard::new(Role::Admin)")]
-    async fn test_admin(&self) -> String {
-        "ok".to_string()
-    }
     #[graphql(guard = "RoleGuard::new(Role::Admin)")]
     async fn create_user(
         &self,
@@ -28,5 +23,34 @@ impl MutationRoot {
     ) -> Result<String> {
         create_user(&name, &password, is_admin).await?;
         Ok("success".to_string())
+    }
+    #[graphql(guard = "RoleGuard::new(Role::Admin)")]
+    async fn create_library(
+        &self,
+        _ctx: &Context<'_>,
+        #[graphql(desc = "Name of library")] name: String,
+        #[graphql(desc = "Library path")] path: String,
+    ) -> Result<Library> {
+        let library = create_library(&name, &path).await?;
+        Ok(Library {
+            name: library.name,
+            path: library.path,
+            id: library.id,
+        })
+    }
+    #[graphql(guard = "RoleGuard::new(Role::Admin)")]
+    async fn start_scan(&self, ctx: &Context<'_>) -> Result<String> {
+        let state = ctx.data::<AppState>().unwrap();
+        let (responder, receiver) = oneshot::channel();
+        state
+            .background_command_sender
+            .send(BackgroundCommand::StartScan { responder })
+            .await?;
+        let response = receiver.await?;
+
+        Ok(format!(
+            "Started: {}, Message: {}",
+            response.started, response.message
+        ))
     }
 }
