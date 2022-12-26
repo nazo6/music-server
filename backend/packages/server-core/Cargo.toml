@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 bcrypt = "0.13"
-thiserror = "1"
+thiserror = { workspace=true }
 entity = { path = "../db/entity" }
 sea-orm = { workspace = true }
 uuid = { workspace = true }

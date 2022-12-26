@@ -2,10 +2,21 @@ use std::sync::{Arc, Mutex};
 
 use tokio::sync::{mpsc, oneshot};
 
+mod errors;
+mod scan;
+
+/// mpmc channel sender to send event to api(graphql subscription).
+type Notifier = async_channel::Sender<BackgroundEvent>;
+/// mpsc channel receiver to receive command from api.
+type Receiver = mpsc::Receiver<BackgroundCommand>;
+/// oneshot channel sender to response command.
+type Responder<T> = oneshot::Sender<T>;
+
 #[derive(Debug)]
 pub enum BackgroundCommand {
     StartScan {
-        responder: oneshot::Sender<StartScanResponse>,
+        responder: Responder<StartScanResponse>,
+        library_id: i32,
     },
 }
 
@@ -17,32 +28,29 @@ pub struct StartScanResponse {
 
 #[derive(Debug, Clone)]
 pub enum BackgroundEvent {
-    UpdateScan { scanning: bool, count: i32 },
+    UpdateScan {
+        library_id: i32,
+        scanning: bool,
+        count: i32,
+    },
 }
 
 #[derive(Debug, Clone)]
 struct BackgroundState {
     scanning: bool,
-    count: i32,
 }
 
 pub struct BackgroundActor {
-    receiver: mpsc::Receiver<BackgroundCommand>,
-    notifier: async_channel::Sender<BackgroundEvent>,
+    receiver: Receiver,
+    notifier: Notifier,
     state: Arc<Mutex<BackgroundState>>,
 }
 
 impl BackgroundActor {
-    pub fn new(
-        receiver: mpsc::Receiver<BackgroundCommand>,
-        notifier: async_channel::Sender<BackgroundEvent>,
-    ) -> Self {
+    pub fn new(receiver: Receiver, notifier: Notifier) -> Self {
         BackgroundActor {
             receiver,
-            state: Arc::new(Mutex::new(BackgroundState {
-                scanning: false,
-                count: 0,
-            })),
+            state: Arc::new(Mutex::new(BackgroundState { scanning: false })),
             notifier,
         }
     }
@@ -50,12 +58,14 @@ impl BackgroundActor {
     async fn handle_message(
         msg: BackgroundCommand,
         state: Arc<Mutex<BackgroundState>>,
-        notifier: async_channel::Sender<BackgroundEvent>,
+        notifier: Notifier,
     ) {
         match msg {
-            BackgroundCommand::StartScan { responder } => {
+            BackgroundCommand::StartScan {
+                responder,
+                library_id,
+            } => {
                 if state.lock().unwrap().scanning {
-                    state.lock().unwrap().count += 1;
                     tracing::info!("Already scanning");
                     responder
                         .send(StartScanResponse {
@@ -74,16 +84,6 @@ impl BackgroundActor {
 
                     tracing::info!("Started scanning");
                 }
-
-                let count = state.lock().unwrap().count;
-
-                notifier
-                    .send(BackgroundEvent::UpdateScan {
-                        scanning: true,
-                        count,
-                    })
-                    .await
-                    .unwrap();
             }
         }
     }

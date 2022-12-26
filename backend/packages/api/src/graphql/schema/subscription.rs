@@ -23,7 +23,7 @@ impl Subscription {
         async_stream::stream! {
             while let Ok(item) = reciever.recv().await {
                 match item {
-                    BackgroundEvent::UpdateScan{scanning, count} => {
+                    BackgroundEvent::UpdateScan{library_id, scanning, count} => {
                         let status = ScanStatus {
                             scanning,
                             proceed_count: count,
