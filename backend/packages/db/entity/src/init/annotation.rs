@@ -1,10 +1,10 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel)]
-#[sea_orm(table_name = "album_artist_relation")]
+#[sea_orm(table_name = "annotation")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub album_id: Uuid,
+    pub user_id: Uuid,
     #[sea_orm(primary_key)]
     pub artist_id: Uuid,
 }

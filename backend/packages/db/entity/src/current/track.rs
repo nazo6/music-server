@@ -6,16 +6,16 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "track")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub id: i32,
+    pub id: Uuid,
     pub title: String,
     pub duration: String,
     pub created_at: String,
     pub star: Option<i16>,
-    pub played_count: i32,
+    pub played_count: Uuid,
     pub file_path: String,
-    pub library_id: i32,
-    pub album_id: Option<i32>,
-    pub genre_id: Option<i32>,
+    pub library_id: Uuid,
+    pub album_id: Option<Uuid>,
+    pub genre_id: Option<Uuid>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

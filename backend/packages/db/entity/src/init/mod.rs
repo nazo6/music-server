@@ -1,6 +1,7 @@
 pub mod access_token;
 pub mod album;
 pub mod album_artist_relation;
+pub mod annotation;
 pub mod artist;
 pub mod artist_track_relation;
 pub mod category;

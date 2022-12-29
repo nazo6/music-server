@@ -4,9 +4,9 @@ use sea_orm::entity::prelude::*;
 #[sea_orm(table_name = "library_user_relation")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub library_id: i32,
+    pub library_id: Uuid,
     #[sea_orm(primary_key)]
-    pub user_id: i32,
+    pub user_id: Uuid,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

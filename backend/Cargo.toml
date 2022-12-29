@@ -6,7 +6,7 @@ members = [
   "packages/db/entity",
   "packages/api",
   "packages/server-core",
-  "packages/server-background"
+  "packages/server-background",
 ]
 
 [workspace.dependencies]

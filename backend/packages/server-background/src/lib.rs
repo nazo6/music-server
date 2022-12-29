@@ -59,7 +59,7 @@ impl BackgroundActor {
         msg: BackgroundCommand,
         state: Arc<Mutex<BackgroundState>>,
         notifier: Notifier,
-    ) {
+    ) -> Result<(), errors::Error> {
         match msg {
             BackgroundCommand::StartScan {
                 responder,
@@ -81,11 +81,14 @@ impl BackgroundActor {
                             message: "Started scanning".to_string(),
                         })
                         .unwrap();
+                    scan::scan(library_id, notifier).await?;
 
                     tracing::info!("Started scanning");
                 }
             }
         }
+
+        Ok(())
     }
 
     pub async fn run(&mut self) {

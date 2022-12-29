@@ -39,12 +39,19 @@ impl MutationRoot {
         })
     }
     #[graphql(guard = "RoleGuard::new(Role::Admin)")]
-    async fn start_scan(&self, ctx: &Context<'_>) -> Result<String> {
+    async fn start_scan(
+        &self,
+        ctx: &Context<'_>,
+        #[graphql(desc = "Library id")] library_id: i32,
+    ) -> Result<String> {
         let state = ctx.data::<AppState>().unwrap();
         let (responder, receiver) = oneshot::channel();
         state
             .background_command_sender
-            .send(BackgroundCommand::StartScan { responder })
+            .send(BackgroundCommand::StartScan {
+                responder,
+                library_id,
+            })
             .await?;
         let response = receiver.await?;
 

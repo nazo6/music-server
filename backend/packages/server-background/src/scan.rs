@@ -1,4 +1,7 @@
-use std::time::Duration;
+use std::{
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 
 use lofty::{read_from_path, Accessor, AudioFile};
 use tokio::task::{spawn, spawn_blocking};
@@ -9,12 +12,14 @@ use server_core::library::get_library;
 use crate::{errors::Error, BackgroundEvent, Notifier};
 
 struct ScanResult {
-    pub tracks: String,
+    pub tracks: Vec<TrackInfo>,
+    pub artists: Vec<String>,
+    pub albums: Vec<String>,
 }
 
-struct FileInfo {
-    duration: Duration,
+struct TrackInfo {
     file_name: String,
+    duration: Duration,
     tag: Tag,
 }
 
@@ -29,42 +34,48 @@ pub async fn scan(library_id: i32, notifier: Notifier) -> Result<(), Error> {
     let library = get_library(library_id).await?;
     let library = library.ok_or_else(|| Error::GeneralError("Invalid library id".to_string()))?;
 
-    let res = spawn(async move {
-        let mut count = 0;
-        for entry in WalkDir::new(library.path)
-            .follow_links(true)
-            .into_iter()
-            .flatten()
-        {
-            if entry.path().is_file() {
+    let mut tracks = Vec::new();
+
+    let count = Arc::new(Mutex::new(0));
+    let walkdir = WalkDir::new(library.path).follow_links(true);
+    for entry in walkdir.into_iter().flatten() {
+        if entry.path().is_file() {
+            let res = {
+                let count = Arc::clone(&count);
                 spawn_blocking(move || {
                     let info = extract_info_from_path(entry.path());
                     match info {
                         Ok(info) => {
-                            count += 1;
-                            Ok(())
+                            let mut count = count.lock().unwrap();
+                            *count += 1;
+                            Ok(info)
                         }
                         Err(err) => Err(err),
                     }
-                });
+                })
+                .await
+                .unwrap()
+            };
+
+            if let Ok(info) = res {
+                let count = *count.lock().unwrap();
+                tracks.push(info);
+                notifier
+                    .send(BackgroundEvent::UpdateScan {
+                        scanning: true,
+                        count,
+                        library_id,
+                    })
+                    .await
+                    .unwrap();
             }
         }
-
-        notifier
-            .send(BackgroundEvent::UpdateScan {
-                scanning: true,
-                count,
-                library_id,
-            })
-            .await
-            .unwrap();
-    })
-    .await;
+    }
 
     Ok(())
 }
 
-fn extract_info_from_path(path: &std::path::Path) -> Result<FileInfo, Error> {
+fn extract_info_from_path(path: &std::path::Path) -> Result<TrackInfo, Error> {
     let tagged_file = read_from_path(path)?;
     let file_name = path.file_name().unwrap().to_str().unwrap().to_string();
     let properties = tagged_file.properties();
@@ -88,7 +99,7 @@ fn extract_info_from_path(path: &std::path::Path) -> Result<FileInfo, Error> {
         },
     };
 
-    Ok(FileInfo {
+    Ok(TrackInfo {
         duration: properties.duration(),
         file_name,
         tag,
